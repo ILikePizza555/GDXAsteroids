@@ -11,10 +11,8 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.AsteroidsGame;
-import com.mygdx.game.components.KeyboardInputController;
 import com.mygdx.game.components.PhysicsComponent;
 import com.mygdx.game.components.RenderComponent;
-import com.mygdx.game.systems.KeyboardInputSystem;
 import com.mygdx.game.systems.PhysicsBinder;
 import com.mygdx.game.systems.RenderSystem;
 
@@ -50,7 +48,6 @@ public class GameScreen implements Screen {
         world = new World(new Vector2(0, 0), true);
 
         //Add systems
-        entityEngine.addSystem(new KeyboardInputSystem());
         entityEngine.addSystem(new PhysicsBinder());
         entityEngine.addSystem(new RenderSystem(this));
 
@@ -69,7 +66,6 @@ public class GameScreen implements Screen {
         //Create the components
         PhysicsComponent p = new PhysicsComponent(world.createBody(playerBody), player);
         RenderComponent r = new RenderComponent();
-        KeyboardInputController k = new KeyboardInputController();
 
         //Properties for the components
         Polygon sprite = new Polygon(new float[] {
@@ -97,7 +93,6 @@ public class GameScreen implements Screen {
         //Add to player
         player.add(p);
         player.add(r);
-        player.add(k);
         return player;
     }
 
