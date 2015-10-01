@@ -3,7 +3,6 @@ package com.mygdx.game.screens;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,12 +14,9 @@ import com.mygdx.game.AsteroidsGame;
 import com.mygdx.game.components.KeyboardInputController;
 import com.mygdx.game.components.PhysicsComponent;
 import com.mygdx.game.components.RenderComponent;
-import com.mygdx.game.components.actions.MoveBackward;
-import com.mygdx.game.components.actions.MoveForward;
 import com.mygdx.game.systems.KeyboardInputSystem;
 import com.mygdx.game.systems.PhysicsBinder;
 import com.mygdx.game.systems.RenderSystem;
-import com.mygdx.game.systems.actions.MoveHandler;
 
 
 /**
@@ -55,7 +51,6 @@ public class GameScreen implements Screen {
 
         //Add systems
         entityEngine.addSystem(new KeyboardInputSystem());
-        entityEngine.addSystem(new MoveHandler());
         entityEngine.addSystem(new PhysicsBinder());
         entityEngine.addSystem(new RenderSystem(this));
 
@@ -74,8 +69,6 @@ public class GameScreen implements Screen {
         //Create the components
         PhysicsComponent p = new PhysicsComponent(world.createBody(playerBody), player);
         RenderComponent r = new RenderComponent();
-        MoveForward mv_f = new MoveForward(100);
-        MoveBackward mv_b = new MoveBackward(100);
         KeyboardInputController k = new KeyboardInputController();
 
         //Properties for the components
@@ -101,14 +94,9 @@ public class GameScreen implements Screen {
         r.renderColor = Color.BLUE;
         r.sprite = sprite;
 
-        k.addKeyBind(Input.Keys.W, mv_f);
-        k.addKeyBind(Input.Keys.S, mv_b);
-
         //Add to player
         player.add(p);
         player.add(r);
-        player.add(mv_b);
-        player.add(mv_f);
         player.add(k);
         return player;
     }
