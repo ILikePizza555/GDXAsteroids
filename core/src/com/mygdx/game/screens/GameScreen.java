@@ -2,8 +2,8 @@ package com.mygdx.game.screens;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,18 +11,25 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.AsteroidsGame;
+import com.mygdx.game.components.KeyboardInputController;
 import com.mygdx.game.components.PhysicsComponent;
 import com.mygdx.game.components.RenderComponent;
+import com.mygdx.game.components.actions.MoveBackward;
+import com.mygdx.game.components.actions.MoveForward;
+import com.mygdx.game.systems.KeyboardInputSystem;
 import com.mygdx.game.systems.PhysicsBinder;
 import com.mygdx.game.systems.RenderSystem;
+import com.mygdx.game.systems.actions.MoveHandler;
 
 
 /**
  * Created by Isaac on 9/27/2015.
  */
 public class GameScreen implements Screen {
+
+    public static boolean DEBUG_ORIGIN = true;
+    public static boolean DEBUG_BOX2D = true;
 
     public final AsteroidsGame game;
 
@@ -41,12 +48,14 @@ public class GameScreen implements Screen {
 
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
-        viewport.apply(true);
+        viewport.apply(false);
 
         entityEngine = new Engine();
         world = new World(new Vector2(0, 0), true);
 
         //Add systems
+        entityEngine.addSystem(new KeyboardInputSystem());
+        entityEngine.addSystem(new MoveHandler());
         entityEngine.addSystem(new PhysicsBinder());
         entityEngine.addSystem(new RenderSystem(this));
 
@@ -60,18 +69,21 @@ public class GameScreen implements Screen {
         //Define the body
         BodyDef playerBody = new BodyDef();
         playerBody.type = BodyDef.BodyType.DynamicBody;
-        playerBody.position.set(300, 300);
+        playerBody.position.set(0, 0);
 
         //Create the components
         PhysicsComponent p = new PhysicsComponent(world.createBody(playerBody), player);
         RenderComponent r = new RenderComponent();
+        MoveForward mv_f = new MoveForward(100);
+        MoveBackward mv_b = new MoveBackward(100);
+        KeyboardInputController k = new KeyboardInputController();
 
         //Properties for the components
         Polygon sprite = new Polygon(new float[] {
-                -40, 40,
-                40, 40,
-                40, -40,
-                -40, -40
+                0, 25,
+                15, -15,
+                0, -10,
+                -15, -15
         });
 
         PolygonShape fixShape = new PolygonShape();
@@ -89,9 +101,15 @@ public class GameScreen implements Screen {
         r.renderColor = Color.BLUE;
         r.sprite = sprite;
 
+        k.addKeyBind(Input.Keys.W, mv_f);
+        k.addKeyBind(Input.Keys.S, mv_b);
+
         //Add to player
         player.add(p);
         player.add(r);
+        player.add(mv_b);
+        player.add(mv_f);
+        player.add(k);
         return player;
     }
 
@@ -111,12 +129,23 @@ public class GameScreen implements Screen {
         world.step(1/60f, 6, 2);
         entityEngine.update(delta);
 
-        debugRenderer.render(world, camera.combined);
+        if(DEBUG_ORIGIN) {
+            game.shapeRenderer.begin();
+            game.shapeRenderer.setColor(Color.BLUE);
+            game.shapeRenderer.line(0f, 0f, 0f, 50f);
+            game.shapeRenderer.setColor(Color.RED);
+            game.shapeRenderer.line(0f, 0f, 50f, 0f);
+            game.shapeRenderer.end();
+        }
+
+        if(DEBUG_BOX2D) {
+            debugRenderer.render(world, camera.combined);
+        }
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        viewport.update(width, height, false);
     }
 
     @Override
