@@ -13,8 +13,12 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.AsteroidsGame;
 import com.mygdx.game.components.PhysicsComponent;
 import com.mygdx.game.components.RenderComponent;
+import com.mygdx.game.components.action.MoveAction;
+import com.mygdx.game.components.input.KeyboardInputComponent;
+import com.mygdx.game.systems.KeyboardInputSystem;
 import com.mygdx.game.systems.PhysicsBinder;
 import com.mygdx.game.systems.RenderSystem;
+import com.mygdx.game.systems.action.MoveActionSystem;
 
 
 /**
@@ -48,6 +52,8 @@ public class GameScreen implements Screen {
         world = new World(new Vector2(0, 0), true);
 
         //Add systems
+        entityEngine.addSystem(new KeyboardInputSystem());
+        entityEngine.addSystem(new MoveActionSystem());
         entityEngine.addSystem(new PhysicsBinder());
         entityEngine.addSystem(new RenderSystem(this));
 
@@ -66,6 +72,8 @@ public class GameScreen implements Screen {
         //Create the components
         PhysicsComponent p = new PhysicsComponent(world.createBody(playerBody), player);
         RenderComponent r = new RenderComponent();
+        KeyboardInputComponent i = new KeyboardInputComponent();
+        MoveAction m = new MoveAction();
 
         //Properties for the components
         Polygon sprite = new Polygon(new float[] {
@@ -90,9 +98,14 @@ public class GameScreen implements Screen {
         r.renderColor = Color.BLUE;
         r.sprite = sprite;
 
+        m.lin_v = 1000f;
+        m.rot_v = 12.0f;
+
         //Add to player
         player.add(p);
         player.add(r);
+        player.add(i);
+        player.add(m);
         return player;
     }
 
