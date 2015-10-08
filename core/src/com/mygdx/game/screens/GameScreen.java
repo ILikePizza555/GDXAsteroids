@@ -19,6 +19,7 @@ import com.mygdx.game.systems.KeyboardInputSystem;
 import com.mygdx.game.systems.PhysicsBinder;
 import com.mygdx.game.systems.RenderSystem;
 import com.mygdx.game.systems.action.MoveActionSystem;
+import com.mygdx.game.utils.EntityArchetypes;
 
 
 /**
@@ -62,56 +63,9 @@ public class GameScreen implements Screen {
         entityEngine.addSystem(new RenderSystem(this));
 
         //Add entities
-        player = spawnPlayer();
+        player = EntityArchetypes.spawnPlayer(world);
+        entityEngine.addEntity(EntityArchetypes.spawnAsteroid(world));
         entityEngine.addEntity(player);
-    }
-
-    private Entity spawnPlayer() {
-        Entity player = new Entity();
-
-        //Define the body
-        BodyDef playerBody = new BodyDef();
-        playerBody.type = BodyDef.BodyType.DynamicBody;
-        playerBody.position.set(0, 0);
-
-        //Create the components
-        PhysicsComponent p = new PhysicsComponent(world.createBody(playerBody), player);
-        RenderComponent r = new RenderComponent();
-        KeyboardInputComponent i = new KeyboardInputComponent();
-        MoveAction m = new MoveAction();
-
-        //Properties for the components
-        Polygon sprite = new Polygon(new float[] {
-                0, 5,
-                3, -3,
-                0, -2,
-                -3, -3
-        });
-
-        PolygonShape fixShape = new PolygonShape();
-        fixShape.set(sprite.getVertices());
-
-        FixtureDef def = new FixtureDef();
-        def.shape = fixShape;
-        def.density = 1f;
-        def.friction = 0f;
-        def.restitution = 0.6f;
-
-        //Apply properties
-        p.physicsBody.createFixture(def);
-
-        r.renderColor = Color.BLUE;
-        r.sprite = sprite;
-
-        m.lin_v = 5f;
-        m.rot_v = 2f;
-
-        //Add to player
-        player.add(p);
-        player.add(r);
-        player.add(i);
-        player.add(m);
-        return player;
     }
 
     @Override
