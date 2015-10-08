@@ -11,6 +11,12 @@ import com.badlogic.gdx.physics.box2d.Body;
 public class PhysicsComponent implements Component {
     public Body physicsBody;
 
+    public float movAngleDamp = 0.1f;
+    public float movLineDamp = 0.1f;
+
+    public float brakeAngleDamp = 2f;
+    public float brakeLineDamp = 3f;
+
     public PhysicsComponent(Body body, Entity ent) {
         physicsBody = body;
         physicsBody.setUserData(ent);

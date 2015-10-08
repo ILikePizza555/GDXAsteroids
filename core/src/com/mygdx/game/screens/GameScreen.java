@@ -28,6 +28,7 @@ public class GameScreen implements Screen {
 
     public static boolean DEBUG_ORIGIN = true;
     public static boolean DEBUG_BOX2D = true;
+    public static boolean DEBUG_SHOWPOS = true;
 
     public final AsteroidsGame game;
 
@@ -35,6 +36,7 @@ public class GameScreen implements Screen {
     ScreenViewport viewport;
 
     Engine entityEngine;
+    Entity player;
     World world;
 
     //Debug
@@ -45,6 +47,8 @@ public class GameScreen implements Screen {
         this.game = game;
 
         camera = new OrthographicCamera();
+        camera.zoom = 0.15f;
+
         viewport = new ScreenViewport(camera);
         viewport.apply(false);
 
@@ -58,7 +62,8 @@ public class GameScreen implements Screen {
         entityEngine.addSystem(new RenderSystem(this));
 
         //Add entities
-        entityEngine.addEntity(spawnPlayer());
+        player = spawnPlayer();
+        entityEngine.addEntity(player);
     }
 
     private Entity spawnPlayer() {
@@ -77,10 +82,10 @@ public class GameScreen implements Screen {
 
         //Properties for the components
         Polygon sprite = new Polygon(new float[] {
-                0, 25,
-                15, -15,
-                0, -10,
-                -15, -15
+                0, 5,
+                3, -3,
+                0, -2,
+                -3, -3
         });
 
         PolygonShape fixShape = new PolygonShape();
@@ -88,8 +93,8 @@ public class GameScreen implements Screen {
 
         FixtureDef def = new FixtureDef();
         def.shape = fixShape;
-        def.density = 0.5f;
-        def.friction = 0.01f;
+        def.density = 1f;
+        def.friction = 0f;
         def.restitution = 0.6f;
 
         //Apply properties
@@ -98,8 +103,8 @@ public class GameScreen implements Screen {
         r.renderColor = Color.BLUE;
         r.sprite = sprite;
 
-        m.lin_v = 1000f;
-        m.rot_v = 12.0f;
+        m.lin_v = 5f;
+        m.rot_v = 2f;
 
         //Add to player
         player.add(p);
@@ -128,14 +133,29 @@ public class GameScreen implements Screen {
         if(DEBUG_ORIGIN) {
             game.shapeRenderer.begin();
             game.shapeRenderer.setColor(Color.BLUE);
-            game.shapeRenderer.line(0f, 0f, 0f, 50f);
+            game.shapeRenderer.line(0f, 0f, 0f, 1f);
             game.shapeRenderer.setColor(Color.RED);
-            game.shapeRenderer.line(0f, 0f, 50f, 0f);
+            game.shapeRenderer.line(0f, 0f, 1f, 0f);
             game.shapeRenderer.end();
         }
 
         if(DEBUG_BOX2D) {
             debugRenderer.render(world, camera.combined);
+        }
+
+        if(DEBUG_SHOWPOS) {
+            PhysicsComponent p = player.getComponent(PhysicsComponent.class);
+            Vector2 pos = p.physicsBody.getPosition();
+            Vector2 vel = p.physicsBody.getLinearVelocity();
+            float angVel = p.physicsBody.getAngularVelocity();
+
+            game.spriteBatch.begin();
+            game.spriteBatch.setColor(Color.WHITE);
+            game.defaultFont.draw(game.spriteBatch, String.format("X: %.4f Y: %.4f", pos.x, pos.y),
+                    10, Gdx.graphics.getHeight() - 5);
+            game.defaultFont.draw(game.spriteBatch, String.format("Vel Ang: %.2f Vel X:  %.2f Vel Y:  %.2f", angVel, vel.x, vel.y),
+                    10, Gdx.graphics.getHeight() - 20);
+            game.spriteBatch.end();
         }
     }
 

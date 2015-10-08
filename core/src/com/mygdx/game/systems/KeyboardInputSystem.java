@@ -31,6 +31,21 @@ public class KeyboardInputSystem extends IteratingSystem {
             i.linearAxis.value = 0f;
         }
 
+        if(Gdx.input.isKeyPressed(Input.Keys.A)) {
+            i.rotAxis.value = i.rotAxis.max;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.D)){
+            i.rotAxis.value = i.rotAxis.min;
+        } else {
+            i.rotAxis.value = 0f;
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+            i.brake.toggle();
+        } else {
+            i.brake.value = i.brake.val_default;
+        }
+
         i.linearAxis.value = MathUtils.clamp(i.linearAxis.value, i.linearAxis.min, i.linearAxis.max);
+        i.rotAxis.value = MathUtils.clamp(i.rotAxis.value, i.rotAxis.min, i.rotAxis.max);
     }
 }

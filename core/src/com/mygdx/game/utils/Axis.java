@@ -1,5 +1,7 @@
 package com.mygdx.game.utils;
 
+import com.badlogic.gdx.math.MathUtils;
+
 /**
  * Created by Isaac on 10/5/2015.
  */
