@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -82,38 +81,49 @@ public final class EntityArchetypes {
         PhysicsComponent p = new PhysicsComponent(world.createBody(asteroidBody), asteroid);
 
         //Create the polygon
-        {
-            ArrayList<Float> polygon = new ArrayList<>();
 
-            float totalAngle = 0f;
-            while (totalAngle < 360f) {
-                float distance = MathUtils.random(2, 5);
-                float angle = MathUtils.random(0, 90);
+        ArrayList<Float> polygon = new ArrayList<>();
 
-                totalAngle += angle;
+        float totalAngle = 0f;
+        while (totalAngle < 360f) {
+            float distance = MathUtils.random(5, 8);
+            float angle = MathUtils.random(0, 90);
 
-                polygon.add(MathUtils.cosDeg(totalAngle) * distance);
-                polygon.add(MathUtils.sinDeg(totalAngle) * distance);
-            }
+            totalAngle += angle;
 
-            float[] vertices = new float[polygon.size()];
-            for (int i = 0; i < polygon.size(); i++)
-                vertices[i] = polygon.get(i);
+            polygon.add(MathUtils.cosDeg(totalAngle) * distance);
+            polygon.add(MathUtils.sinDeg(totalAngle) * distance);
 
-            r.sprite = new Polygon(vertices);
-            r.renderColor = new Color(Color.RED);
         }
 
-        PolygonShape fixShape = new PolygonShape();
-        fixShape.set(r.sprite.getVertices());
+        PolygonShape triangle;
+        float[] verts;
+        for(int i = 2; i < polygon.size() + 2; i+=2) {
+            if(i >= 4) {
+                verts = new float[]{
+                        0, 0,
+                        polygon.get(i - 2), polygon.get(i - 1),
+                        polygon.get(i - 4), polygon.get(i - 3)
+                };
+            } else {
+                verts = new float[]{
+                        0, 0,
+                        polygon.get(i - 2), polygon.get(i - 1),
+                        polygon.get(polygon.size()-2), polygon.get(polygon.size()-1)
+                };
+            }
+            triangle = new PolygonShape();
+            triangle.set(verts);
+            p.physicsBody.createFixture(triangle, 0.3f);
+            triangle.dispose();
+        }
 
-        FixtureDef def = new FixtureDef();
-        def.shape = fixShape;
-        def.density = 0.8f;
-        def.friction = 0f;
-        def.restitution = 0.8f;
+        float[] vertices = new float[polygon.size()];
+        for (int i = 0; i < polygon.size(); i++)
+            vertices[i] = polygon.get(i);
 
-        p.physicsBody.createFixture(def);
+        r.sprite = new Polygon(vertices);
+        r.renderColor = new Color(Color.RED);
 
         asteroid.add(r);
         asteroid.add(p);
