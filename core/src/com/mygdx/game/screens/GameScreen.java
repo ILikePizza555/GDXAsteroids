@@ -11,11 +11,12 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.AsteroidsGame;
-import com.mygdx.game.components.PhysicsComponent;
+import com.mygdx.game.components.RenderComponent;
 import com.mygdx.game.systems.KeyboardInputSystem;
 import com.mygdx.game.systems.PhysicsBinder;
 import com.mygdx.game.systems.RenderSystem;
 import com.mygdx.game.systems.action.MoveActionSystem;
+import com.mygdx.game.ui.PlayerUI;
 import com.mygdx.game.utils.EntityArchetypes;
 
 
@@ -34,6 +35,7 @@ public class GameScreen implements Screen {
     ScreenViewport viewport;
 
     Engine entityEngine;
+    PlayerUI ui;
     Entity player;
     World world;
 
@@ -63,6 +65,8 @@ public class GameScreen implements Screen {
         player = EntityArchetypes.spawnPlayer(world);
         entityEngine.addEntity(EntityArchetypes.spawnAsteroid(world));
         entityEngine.addEntity(player);
+
+        ui = new PlayerUI(new ScreenViewport(), player, game);
     }
 
     @Override
@@ -78,8 +82,14 @@ public class GameScreen implements Screen {
 
         game.shapeRenderer.setProjectionMatrix(camera.combined);
 
-        world.step(1/60f, 6, 2);
-        entityEngine.update(delta);
+        if(!PlayerUI.isGamePaused) {
+            world.step(1 / 60f, 6, 2);
+            entityEngine.update(delta);
+        } else {
+            entityEngine.getSystem(RenderSystem.class).update(delta);
+        }
+
+        ui.render();
 
         if(DEBUG_ORIGIN) {
             game.shapeRenderer.begin();
@@ -93,26 +103,12 @@ public class GameScreen implements Screen {
         if(DEBUG_BOX2D) {
             debugRenderer.render(world, camera.combined);
         }
-
-        if(DEBUG_SHOWPOS) {
-            PhysicsComponent p = player.getComponent(PhysicsComponent.class);
-            Vector2 pos = p.physicsBody.getPosition();
-            Vector2 vel = p.physicsBody.getLinearVelocity();
-            float angVel = p.physicsBody.getAngularVelocity();
-
-            game.spriteBatch.begin();
-            game.spriteBatch.setColor(Color.WHITE);
-            game.defaultFont.draw(game.spriteBatch, String.format("X: %.4f Y: %.4f", pos.x, pos.y),
-                    10, Gdx.graphics.getHeight() - 5);
-            game.defaultFont.draw(game.spriteBatch, String.format("Vel Ang: %.2f Vel X:  %.2f Vel Y:  %.2f", angVel, vel.x, vel.y),
-                    10, Gdx.graphics.getHeight() - 20);
-            game.spriteBatch.end();
-        }
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, false);
+        ui.resize(width, height);
     }
 
     @Override
