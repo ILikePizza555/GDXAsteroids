@@ -20,6 +20,7 @@ public class PlayerUI extends UI {
     Table showPos;
     Label posInfo;
     Label velInfo;
+    Label pauseMessage;
 
     Entity player;
     AsteroidsGame game;
@@ -30,6 +31,11 @@ public class PlayerUI extends UI {
         this.game = game;
 
         setupShowPos();
+
+        pauseMessage = new Label("Game Paused.", game.defaultSkin);
+        pauseMessage.setPosition(300, 300);
+        pauseMessage.setVisible(false);
+        ui_stage.addActor(pauseMessage);
     }
 
     private void setupShowPos() {
@@ -51,6 +57,12 @@ public class PlayerUI extends UI {
     @Override
     protected void update() {
         updateShowPos();
+
+        if(isGamePaused) {
+            pauseMessage.setVisible(true);
+        } else {
+            pauseMessage.setVisible(false);
+        }
     }
 
     private void updateShowPos() {
