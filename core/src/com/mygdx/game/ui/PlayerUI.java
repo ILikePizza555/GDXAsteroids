@@ -21,8 +21,6 @@ public class PlayerUI extends UI {
     Label posInfo;
     Label velInfo;
 
-    ConsoleWindow consoleWindow;
-
     Entity player;
     AsteroidsGame game;
 
@@ -32,7 +30,6 @@ public class PlayerUI extends UI {
         this.game = game;
 
         setupShowPos();
-        setupConsole();
     }
 
     private void setupShowPos() {
@@ -51,16 +48,9 @@ public class PlayerUI extends UI {
         ui_stage.addActor(showPos);
     }
 
-    private void setupConsole() {
-        consoleWindow = new ConsoleWindow("Developer Console", game.defaultSkin);
-        ui_stage.addActor(consoleWindow);
-    }
-
-
     @Override
     protected void update() {
         updateShowPos();
-        updateConsole();
     }
 
     private void updateShowPos() {
@@ -71,12 +61,5 @@ public class PlayerUI extends UI {
 
         posInfo.setText(String.format("X: %.4f Y: %.4f", pos.x, pos.y));
         velInfo.setText(String.format("Vel Ang: %.2f Vel X: %.2f Vel Y: %.2f", angVel, vel.x, vel.y));
-    }
-
-    private void updateConsole() {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.F11)) {
-            consoleWindow.setVisible(!consoleWindow.isVisible());
-            isGamePaused = consoleWindow.isVisible();
-        }
     }
 }
