@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -30,8 +31,8 @@ public class AsteroidArchetype extends Archetype {
 
         float totalAngle = 0f;
         while (totalAngle < 360f) {
-            float distance = MathUtils.random(5, 8);
-            float angle = MathUtils.random(0, 90);
+            float distance = MathUtils.random(2f, 8f);
+            float angle = MathUtils.random(40f, 80f);
 
             totalAngle += angle;
 
@@ -71,6 +72,15 @@ public class AsteroidArchetype extends Archetype {
         }
     }
 
+    private void setSpeed(PhysicsComponent p) {
+        float speed = MathUtils.random(100f, 1000f);
+        float angle = MathUtils.random(0f, 360f);
+
+        Vector2 pos = p.physicsBody.getPosition();
+
+        p.physicsBody.applyLinearImpulse(-1 * MathUtils.sinDeg(angle) * speed, MathUtils.cosDeg(angle) * speed, pos.x, pos.y, true);
+    }
+
     @Override
     public Entity buildEntity() {
         Entity asteroid = new Entity();
@@ -86,6 +96,8 @@ public class AsteroidArchetype extends Archetype {
         //Create the polygon
         float[] polygon = buildPolygon();
         triangulateFixtures(p, polygon);
+
+        setSpeed(p);
 
         r.sprite = new Polygon(polygon);
         r.renderColor = new Color(Color.RED);

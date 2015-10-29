@@ -11,6 +11,7 @@ import com.mygdx.game.components.input.KeyboardInputComponent;
 public class Mappers {
     public final static ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
     public final static ComponentMapper<RenderComponent> renderMapper = ComponentMapper.getFor(RenderComponent.class);
+    public final static ComponentMapper<SpawnerComponent> spawnerMapper = ComponentMapper.getFor(SpawnerComponent.class);
 
     public final static ComponentMapper<InputComponent> inputMapper = ComponentMapper.getFor(InputComponent.class);
     public final static ComponentMapper<KeyboardInputComponent> keyInputMapper = ComponentMapper.getFor(KeyboardInputComponent.class);

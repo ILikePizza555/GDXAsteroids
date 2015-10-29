@@ -12,10 +12,13 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.AsteroidsGame;
+import com.mygdx.game.components.SpawnerComponent;
+import com.mygdx.game.entity.archetypes.AsteroidArchetype;
 import com.mygdx.game.entity.archetypes.PlayerArchetype;
 import com.mygdx.game.systems.KeyboardInputSystem;
 import com.mygdx.game.systems.PhysicsBinder;
 import com.mygdx.game.systems.RenderSystem;
+import com.mygdx.game.systems.SpawnerSystem;
 import com.mygdx.game.systems.action.MoveActionSystem;
 import com.mygdx.game.ui.PlayerUI;
 
@@ -39,6 +42,7 @@ public class GameScreen implements Screen {
     World world;
 
     Entity player;
+    Entity asteroidSpawner;
 
     //Debug
     Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
@@ -59,12 +63,17 @@ public class GameScreen implements Screen {
         //Add systems
         entityEngine.addSystem(new KeyboardInputSystem());
         entityEngine.addSystem(new MoveActionSystem());
+        entityEngine.addSystem(new SpawnerSystem(entityEngine));
         entityEngine.addSystem(new PhysicsBinder());
         entityEngine.addSystem(new RenderSystem(this));
 
         //Add entities
         player = PlayerArchetype.spawnPlayer(world);
         entityEngine.addEntity(player);
+
+        asteroidSpawner = new Entity();
+        asteroidSpawner.add(new SpawnerComponent(new AsteroidArchetype(world)));
+        entityEngine.addEntity(asteroidSpawner);
 
         ui = new PlayerUI(new ScreenViewport(), player, game);
     }
