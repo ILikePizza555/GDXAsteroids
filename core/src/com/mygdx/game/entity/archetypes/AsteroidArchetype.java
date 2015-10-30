@@ -32,12 +32,14 @@ public class AsteroidArchetype extends Archetype {
         float totalAngle = 0f;
         while (totalAngle < 360f) {
             float distance = MathUtils.random(2f, 8f);
-            float angle = MathUtils.random(40f, 80f);
+            float angle = MathUtils.random(5f, 90f);
 
             totalAngle += angle;
 
-            verts.add(MathUtils.cosDeg(totalAngle) * distance);
-            verts.add(MathUtils.sinDeg(totalAngle) * distance);
+            if(totalAngle < 360f) {
+                verts.add(MathUtils.cosDeg(totalAngle) * distance);
+                verts.add(MathUtils.sinDeg(totalAngle) * distance);
+            }
 
         }
 

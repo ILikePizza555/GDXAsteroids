@@ -30,7 +30,6 @@ public class SpawnerSystem extends IteratingSystem {
         if(timers.containsKey(entity)) {
             //Old time
             float time = timers.get(entity);
-            System.out.printf("Entity: %d, time: %f%n", entity.getId(), time);
 
             if(time >= sp.rate) {
                 //Timer was hit
